@@ -1,10 +1,14 @@
 import os
+from os import path
 import re
 import sys
 
 import torch
 
 from diffusers import StableDiffusionPipeline
+
+diffusers_dir = path.join(path.dirname(__file__), "..", "..", "diffusers")
+script_file = path.join(diffusers_dir, "scripts", "convert_diffusers_to_original_stable_diffusion.py")
 
 model_id = sys.argv[1]
 
@@ -18,7 +22,7 @@ model, cached_dir = StableDiffusionPipeline.from_pretrained(
 )
 
 os.system(
-    f'python ../../diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py '
+    f'python "{script_file}" '
     f'--model_path "{cached_dir}" '
-    f'--checkpoint_path "{output}"'
+    f'--checkpoint_path "{output}" '
     f'--use_safetensors')
