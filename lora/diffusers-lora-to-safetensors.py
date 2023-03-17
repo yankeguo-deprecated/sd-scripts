@@ -11,12 +11,12 @@ Put this file in the same folder of .bin or .pkl file and run `python convert-to
 import re
 import os
 import argparse
-import torch;
+import torch
 from safetensors.torch import save_file
 
+
 def main(args):
-    
-    ## use GPU or CPU
+    # use GPU or CPU
     if torch.cuda.is_available():
         device = 'cuda'
         checkpoint = torch.load(args.file, map_location=torch.device('cuda'))
@@ -24,17 +24,16 @@ def main(args):
         device = 'cpu'
         # if on CPU or want to have maximum precision on GPU, use default full-precision setting
         checkpoint = torch.load(args.file, map_location=torch.device('cpu'))
-    
+
     print(f'device is {device}')
 
-    
     new_dict = dict()
     for idx, key in enumerate(checkpoint):
-        new_key = re.sub('\.processor\.', '_', key)
-        new_key = re.sub('mid_block\.', 'mid_block_', new_key)
+        new_key = re.sub(r'\.processor\.', '_', key)
+        new_key = re.sub(r'mid_block\.', 'mid_block_', new_key)
         new_key = re.sub('_lora.up.', '.lora_up.', new_key)
         new_key = re.sub('_lora.down.', '.lora_down.', new_key)
-        new_key = re.sub('\.(\d+)\.', '_\\1_', new_key)
+        new_key = re.sub(r'\.(\d+)\.', '_\\1_', new_key)
         new_key = re.sub('to_out', 'to_out_0', new_key)
         new_key = 'lora_unet_' + new_key
 
@@ -55,9 +54,8 @@ def parse_args():
         required=True,
         help="path to the full file name",
     )
-    
-    args = parser.parse_args()
-    return args
+
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
